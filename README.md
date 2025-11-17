@@ -58,7 +58,7 @@ Returns only your IP address as plain text.
 
 ### `/api` - JSON API
 
-Returns comprehensive IP information in JSON format.
+Returns comprehensive IP information in JSON format including connection type detection (VPN/Datacenter/Residential).
 
 **Response:**
 ```json
@@ -87,6 +87,72 @@ Returns comprehensive IP information in JSON format.
 
 ---
 
+### `/headers` - HTTP Headers
+
+Returns all HTTP headers sent by your browser.
+
+**Response:**
+```json
+{
+  "headers": {
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)...",
+    "accept": "text/html,application/xhtml+xml...",
+    "accept-language": "en-US,en;q=0.9",
+    "accept-encoding": "gzip, deflate, br"
+  }
+}
+```
+
+**Perfect for:**
+- Debugging HTTP headers
+- Browser fingerprinting research
+- Testing proxy/VPN header leaks
+
+---
+
+### `/user-agent` - User Agent String
+
+Returns your browser's User-Agent string as plain text.
+
+**Response:**
+```
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+```
+
+**Perfect for:**
+- Quick browser identification
+- Testing User-Agent spoofing
+- CI/CD browser detection
+
+---
+
+### `/api/connection-type` - Connection Type Detection
+
+Detects if your connection is from a VPN, datacenter, or residential network.
+
+**Response:**
+```json
+{
+  "ip": "1.2.3.4",
+  "connectionType": "datacenter",
+  "provider": "Hetzner Online GmbH",
+  "asn": 24940
+}
+```
+
+**Possible values:**
+- `residential` - Home/mobile ISP
+- `datacenter` - Hosting provider, VPS
+- `vpn` - Known VPN provider (via Tor exit nodes database)
+- `unknown` - Unable to determine
+
+**Perfect for:**
+- VPN detection
+- Fraud prevention
+- Traffic analysis
+
+---
+
 ## 💻 Code Examples
 
 ### Bash / curl
@@ -110,6 +176,15 @@ curl -s https://myip.foo/api | jq '.'
 
 # Extract specific field
 curl -s https://myip.foo/api | jq -r '.location.country'
+
+# Get User-Agent
+curl https://myip.foo/user-agent
+
+# Get all headers
+curl -s https://myip.foo/headers | jq '.'
+
+# Check connection type
+curl -s https://myip.foo/api/connection-type | jq '.'
 ```
 
 ---
